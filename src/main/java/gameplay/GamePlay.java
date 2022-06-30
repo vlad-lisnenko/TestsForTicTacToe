@@ -1,0 +1,216 @@
+package gameplay;
+
+import data.GameStates;
+import data.Sign;
+
+import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.Objects;
+import java.util.Scanner;
+
+import static data.GameStates.*;
+import static data.Sign.*;
+import static data.Sign.getSign;
+import static draw.Draw.drawField;
+import static java.lang.System.exit;
+import static utils.Utils.SIZE;
+
+public class GamePlay {
+    public static final String INPUT_SIGN_WELCOME = "Input sign or q (Q) for exit: ";
+    public static final String INPUT_COORDINATES_X_Y = "Input coordinates [row,column] for %c\n";
+    public static final String WRONG_INPUT_PARAMETERS =
+            "Wrong coordinates parameters";
+    public static final String WRONG_INPUT_PARAMETERS_SET_X =
+            "Wrong sign parameter set 'X' by default";
+
+    private final Sign[][] field;
+
+    public GamePlay() {
+        field = new Sign[SIZE][SIZE];
+        initializeWithEmpties();
+    }
+
+    public GamePlay(Sign[][] field) {
+        this.field = field;
+    }
+
+    private void initializeWithEmpties() {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                field[i][j] = EMPTY;
+            }
+        }
+    }
+
+    public Sign[][] getField() {
+        return field;
+    }
+
+
+    private GameStates getWinner(Sign sign) {
+        return sign == CROSS ? WINNER_X : WINNER_0;
+    }
+
+    public GameStates checkGameState(Sign sign) {
+        if (isHorizontalCompleted(sign)
+                || isMainDiagonalCompleted(sign)
+                || isSideDiagonalCompleted(sign)
+                || isVerticalCompleted(sign)) {
+            return getWinner(sign);
+        } else if (isTie()) {
+            return TIE;
+        }
+
+        return GAME_IS_CONTINUE;
+    }
+
+    private boolean isArrayValuesEquals(Sign[] temp, Sign sign) {
+        for (Sign c : temp) {
+            if (c != sign) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isHorizontalCompleted(Sign sign) {
+        Sign[] line = new Sign[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (field[i][j] == sign) {
+                    line[j] = field[i][j];
+                }
+            }
+            if (isArrayValuesEquals(line, sign)) {
+                return true;
+            }
+            Arrays.fill(line, EMPTY);
+        }
+        return false;
+    }
+
+    private boolean isVerticalCompleted(Sign sign) {
+        Sign[] column = new Sign[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (field[j][i] == sign) {
+                    column[j] = field[j][i];
+                }
+            }
+            if (isArrayValuesEquals(column, sign)) {
+                return true;
+            }
+            Arrays.fill(column, EMPTY);
+        }
+        return false;
+    }
+
+    private boolean isMainDiagonalCompleted(Sign sign) {
+        for (int i = 0; i < SIZE; i++) {
+            if (field[i][i] != sign) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isSideDiagonalCompleted(Sign sign) {
+        for (int i = 0; i < SIZE; i++) {
+            if (field[i][SIZE - i - 1] != sign) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isTie() {
+        for (Sign[] rows : field) {
+            for (Sign element : rows) {
+                if (element == EMPTY) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean inputTurnsCoordinates(int x, int y, Sign sign) {
+        if (x >= SIZE || x < 0 || y >= SIZE || y < 0) {
+            return false;
+        }
+
+        if (field[x][y] == EMPTY) {
+            field[x][y] = sign;
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private int[] inputValues(Sign sign) {
+        Scanner scanner = new Scanner(System.in);
+        int[] inputArray = new int[2];
+        try {
+            System.out.printf(INPUT_COORDINATES_X_Y, sign.getSign1());
+            scanner.useDelimiter("\\s|,|\\n");
+            inputArray[0] = scanner.nextInt();
+            inputArray[1] = scanner.nextInt();
+        } catch (InputMismatchException exception) {
+            Arrays.fill(inputArray, -1);
+        }
+        return inputArray;
+    }
+
+    public void game() {
+        GameStates currentGameState = GAME_IS_CONTINUE;
+
+        drawField(field);
+
+        Sign sign = getSignFromInput();
+
+        do {
+            int[] coordinates = inputValues(sign);
+            int x = coordinates[0];
+            int y = coordinates[1];
+            if (!inputTurnsCoordinates(x, y, sign)) {
+                printErrorCoordinatesMessage();
+                continue;
+            }
+            drawField(getField());
+
+            currentGameState = checkGameState(sign);
+
+            sign = Sign.getOppositeSign(sign);
+
+            printCurrentGameState(currentGameState.getGameStateMessage());
+        } while (Objects.equals(currentGameState, GAME_IS_CONTINUE));
+    }
+
+    private void printCurrentGameState(String currentGameState) {
+        System.out.println(currentGameState);
+    }
+
+    private void printErrorCoordinatesMessage() {
+        printCurrentGameState(WRONG_INPUT_PARAMETERS);
+    }
+
+    private Sign getSignFromInput() {
+        System.out.print(INPUT_SIGN_WELCOME);
+
+        final Scanner scanner = new Scanner(System.in);
+        final String input = scanner.next();
+        final Sign sign = getSign(input.charAt(0));
+
+        if (Objects.equals(sign, QUIT)) {
+            exit(0);
+        }
+
+        if (!Objects.equals(sign, CROSS)
+                && !Objects.equals(sign, ZERO)) {
+            printCurrentGameState(WRONG_INPUT_PARAMETERS_SET_X);
+            return CROSS;
+        }
+
+        return sign;
+    }
+}
