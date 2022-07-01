@@ -10,10 +10,8 @@ import java.util.Scanner;
 
 import static data.GameStates.*;
 import static data.Sign.*;
-import static data.Sign.getSign;
 import static draw.Draw.drawField;
 import static java.lang.System.exit;
-import static utils.Utils.SIZE;
 
 public class GamePlay {
     public static final String INPUT_SIGN_WELCOME = "Input sign or q (Q) for exit: ";
@@ -24,19 +22,22 @@ public class GamePlay {
             "Wrong sign parameter set 'X' by default";
 
     private final Sign[][] field;
+    private final Integer size;
 
-    public GamePlay() {
-        field = new Sign[SIZE][SIZE];
+    public GamePlay(Integer size) {
+        this.size = size;
+        field = new Sign[size][size];
         initializeWithEmpties();
     }
 
-    public GamePlay(Sign[][] field) {
+    public GamePlay(Sign[][] field, Integer size) {
+        this.size = size;
         this.field = field;
     }
 
     private void initializeWithEmpties() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 field[i][j] = EMPTY;
             }
         }
@@ -74,9 +75,9 @@ public class GamePlay {
     }
 
     private boolean isHorizontalCompleted(Sign sign) {
-        Sign[] line = new Sign[SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        Sign[] line = new Sign[size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 if (field[i][j] == sign) {
                     line[j] = field[i][j];
                 }
@@ -90,9 +91,9 @@ public class GamePlay {
     }
 
     private boolean isVerticalCompleted(Sign sign) {
-        Sign[] column = new Sign[SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        Sign[] column = new Sign[size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 if (field[j][i] == sign) {
                     column[j] = field[j][i];
                 }
@@ -106,7 +107,7 @@ public class GamePlay {
     }
 
     private boolean isMainDiagonalCompleted(Sign sign) {
-        for (int i = 0; i < SIZE; i++) {
+        for (int i = 0; i < size; i++) {
             if (field[i][i] != sign) {
                 return false;
             }
@@ -115,8 +116,8 @@ public class GamePlay {
     }
 
     private boolean isSideDiagonalCompleted(Sign sign) {
-        for (int i = 0; i < SIZE; i++) {
-            if (field[i][SIZE - i - 1] != sign) {
+        for (int i = 0; i < size; i++) {
+            if (field[i][size - i - 1] != sign) {
                 return false;
             }
         }
@@ -135,7 +136,7 @@ public class GamePlay {
     }
 
     public boolean inputTurnsCoordinates(int x, int y, Sign sign) {
-        if (x >= SIZE || x < 0 || y >= SIZE || y < 0) {
+        if (x >= size || x < 0 || y >= size || y < 0) {
             return false;
         }
 

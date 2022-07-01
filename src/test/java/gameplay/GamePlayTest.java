@@ -24,10 +24,10 @@ class GamePlayTest {
 
     @Test
     void game_FillsFieldWithSignsChecksWinner_Field3X3_ReturnTie(){
-        final int SIZE = 3;
+        final int size = 3;
         //Arrange
 
-        Sign[][] field = new Sign[SIZE][SIZE];
+        Sign[][] field = new Sign[size][size];
 
         field[0][0] = CROSS;
         field[0][1] = ZERO;
@@ -41,7 +41,7 @@ class GamePlayTest {
         field[2][1] = CROSS;
         field[2][2] = ZERO;
 
-        GamePlay gamePlay = new GamePlay(field);
+        GamePlay gamePlay = new GamePlay(field, size);
 
         drawField(field);
 
@@ -60,10 +60,10 @@ class GamePlayTest {
     @Test
     void game_FillsFieldWithSignsChecksWinner_Field3X3_ReturnTie_LoadFile() throws IOException {
         // Arrange
-        final int SIZE = 3;
-        Sign[][] testArray = textToArray("test_data_cross_wins.txt", SIZE);
+        final int size = 3;
+        Sign[][] testArray = textToArray("test_data_cross_wins.txt", size);
 
-        GamePlay gamePlay = new GamePlay(testArray);
+        GamePlay gamePlay = new GamePlay(testArray, size);
         drawField(testArray);
 
         GameStates expected = WINNER_X;
