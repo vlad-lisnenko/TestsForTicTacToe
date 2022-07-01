@@ -164,7 +164,7 @@ public class GamePlay {
     public void game() {
         GameStates currentGameState = GAME_IS_CONTINUE;
 
-        drawField(field);
+        drawField(getField());
 
         Sign sign = getSignFromInput();
 
@@ -205,8 +205,7 @@ public class GamePlay {
             exit(0);
         }
 
-        if (!Objects.equals(sign, CROSS)
-                && !Objects.equals(sign, ZERO)) {
+        if (Objects.equals(sign, EMPTY)) {
             printCurrentGameState(WRONG_INPUT_PARAMETERS_SET_X);
             return CROSS;
         }
