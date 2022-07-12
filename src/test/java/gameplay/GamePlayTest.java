@@ -80,6 +80,7 @@ class GamePlayTest {
     @Test
     void game_FillsFieldWithSignsChecksWinner_Field5X5_ReturnZerosWins_LoadFile() throws IOException {
         // Arrange
+
         final int size = 5;
         Sign[][] testArray = textToArray("5x5/test_data_zeros_wins.txt", size);
 
